@@ -3,6 +3,7 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 
+
 def CellName(column, row_num):
     name = column + str(row_num)
     return name
@@ -20,19 +21,30 @@ def GetTicker(row_num):
     ticker = GetCell('B', row_num)
     return ticker
 
-def GetSiteText(ticker, url):
+def GetSite(page_url, ticker):
+    url = page_url + ticker
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:45.0) Gecko/20100101 Firefox/45.0'}
-    r = requests.get(url + ticker, headers = headers)
-    print(r.encoding)
-    return r.text
-    #with open('test.html', 'w', encoding="utf-8") as output_file:
-        #output_file.write(r.text)
+    r = requests.get(url, headers = headers)
+    with open('test.html', 'w', encoding="utf-8") as output_file:
+        output_file.write(r.text)
 
-def ParseFinViz(text):
-    soup = BeautifulSoup(text)
-    peg = soup.find_all('div', {'class': ['item', 'item even']})
-    i = peg.find('td', {'class': 'snapshot-td2'}).find('b').text
-    p = 1
+    return r.text
+
+def GetFinViz(ticker):
+    url = "https://finviz.com/quote.ashx?t="
+    html_text = GetSite(url, ticker)
+    str = []
+    st = ''
+    soup = BeautifulSoup(html_text, 'html.parser')
+    
+    table = soup.find_all('td', class_ = 'snapshot-td2')
+    #with open('test.html', 'w', encoding="utf-8") as output_file:
+        #output_file.write(st)
+
+    str.append(table[13].text)
+    str.append(table[38].text)
+    print(str)
+
 
 gc = pygsheets.authorize()
 
@@ -42,13 +54,11 @@ wks = sh.sheet1
 start_row_index = 2
 # Read Tickers from cells in 1sr column do-while
 row_index = start_row_index
-finviz_url = "https://finviz.com/quote.ashx?t="
 
 while (True):
     ticker = GetTicker(row_index)
     if ticker != '':
-        fin_viz_text = GetSiteText(ticker, finviz_url)
-        ParseFinViz(fin_viz_text)
+        GetFinViz(ticker)
         #SetCell('E', row_index, "=GOOGLEFINANCE(\""+ticker+"\",\"pe\")")
         row_index += 1
     else:
