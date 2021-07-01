@@ -5,7 +5,6 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
 
-
 def CellName(column, row_num):
     name = column + str(row_num)
     return name
@@ -48,7 +47,6 @@ def GetHtml(wd):
     html_text = wd.execute_script('return document.body.innerHTML;')
     return html_text
 
-
 def GetYahoo(ticker, wd):
     res = []
     html_text = GetHtml(wd)
@@ -60,11 +58,10 @@ def GetYahoo(ticker, wd):
     data = price[0].contents[4].contents[0]
     res.append(data)
     return res
-   
 
 gc = pygsheets.authorize()
-sh = gc.open('sampleTitle')
-wks = sh.sheet1
+sh = gc.open('Daily')
+wks = sh.worksheet('title', 'NewStonks')
 row_index = 2
 wd = webdriver.Chrome()
 
