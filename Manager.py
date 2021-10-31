@@ -1,22 +1,23 @@
 import pygsheets
 import yfinance as yf
 import finviz as fv
+
 #+
 def CellName(column, row_num):
     name = column + str(row_num)
     return name
 #+
-def GetCell(column, row_num):
+def GetCell(column, row_num, wks):
     adress = CellName(column, row_num)
     value = wks.cell(adress).value
     return value
 #+
-def SetCell(column, row_num, value):
+def SetCell(column, row_num, value, wks):
     adress = CellName(column, row_num)
     wks.cell(adress).value = value
 #+
-def GetTicker(row_num):
-    ticker = GetCell('B', row_num)
+def GetTicker(row_num, wks):
+    ticker = GetCell('B', row_num, wks)
     return ticker
 #+
 def GetYahooApi(ticker):
@@ -37,24 +38,26 @@ def GetFinvizApi(ticker):
     res.append(eps)    
     return res
 
-gc = pygsheets.authorize()
-sh = gc.open('Daily')
-wks = sh.worksheet('title', 'NewStonks')
-row_index = 2
+def Main():
+    gc = pygsheets.authorize()
+    sh = gc.open('Daily')
+    wks = sh.worksheet('title', 'NewStonks')
+    row_index = 2
 
-while (True):
-    ticker = GetTicker(row_index)
-    if ticker != '':
-        fin_viz_data = GetFinvizApi(ticker)
-        SetCell('F', row_index, fin_viz_data[0])
-        SetCell('G', row_index, fin_viz_data[1])
-        yahoo_data = GetYahooApi(ticker)
-        SetCell('K', row_index, yahoo_data[0])
-        SetCell('J', row_index, yahoo_data[1])
-        print(ticker + str(row_index))
-        row_index += 1
-    else:
-        break
+    while (True):
+        ticker = GetTicker(row_index, wks)
+        if ticker != '':
+            fin_viz_data = GetFinvizApi(ticker)
+            SetCell('F', row_index, fin_viz_data[0], wks)
+            SetCell('G', row_index, fin_viz_data[1], wks)
+            yahoo_data = GetYahooApi(ticker)
+            SetCell('K', row_index, yahoo_data[0], wks)
+            SetCell('J', row_index, yahoo_data[1], wks)
+            print(ticker + str(row_index))
+            row_index += 1
+        else:
+            break
 
+Main()
 print("hui")
 
