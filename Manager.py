@@ -41,7 +41,7 @@ def GetFinvizApi(ticker):
 def Main():
     gc = pygsheets.authorize()
     sh = gc.open('Daily')
-    wks = sh.worksheet('title', 'NewStonks')
+    wks = sh.worksheet('title', 'Stonks')
     row_index = 2
 
     while (True):
