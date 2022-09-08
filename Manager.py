@@ -42,11 +42,13 @@ def Main():
     gc = pygsheets.authorize()
     sh = gc.open('Daily')
     wks = sh.worksheet('title', 'Stonks')
-    row_index = 2
+    row_index = input()
+    rows_qnt = input()
+    limit = row_index + rows_qnt
 
     while (True):
         ticker = GetTicker(row_index, wks)
-        if ticker != '':
+        if ticker != '' and row_index < limit:
             fin_viz_data = GetFinvizApi(ticker)
             SetCell('F', row_index, fin_viz_data[0], wks)
             SetCell('G', row_index, fin_viz_data[1], wks)
