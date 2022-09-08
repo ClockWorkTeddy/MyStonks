@@ -42,7 +42,7 @@ def Main():
     gc = pygsheets.authorize()
     sh = gc.open('Daily')
     wks = sh.worksheet('title', 'NewStonks')
-    row_index = 2
+    row_index = input()
 
     while (True):
         ticker = GetTicker(row_index, wks)
