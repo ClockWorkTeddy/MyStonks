@@ -1,3 +1,4 @@
+from pickle import FALSE, TRUE
 import pygsheets
 import yfinance as yf
 import finviz as fv
@@ -45,6 +46,15 @@ def GetTimeStamp():
     
     return date_time
 
+def OverLimit(row_index, rows_qnt, limit):
+    if rows_qnt == 0 :
+        return TRUE
+    else:
+        if row_index >= limit :
+            return FALSE
+        else:
+            return TRUE
+
 def Main():
     gc = pygsheets.authorize()
     sh = gc.open('Daily')
@@ -56,7 +66,7 @@ def Main():
     while (True):
         ticker = GetTicker(row_index, wks)
         date_time = GetTimeStamp()
-        if ticker != '' and int(row_index) < limit:
+        if ticker != '' and OverLimit(row_index, rows_qnt, limit) != FALSE:
             SetCell('C', row_index, date_time, wks)
             fin_viz_data = GetFinvizApi(ticker)
             SetCell('G', row_index, fin_viz_data[0], wks)
