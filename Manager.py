@@ -1,6 +1,7 @@
 import pygsheets
 import yfinance as yf
 import finviz as fv
+import datetime as dt
 
 #+
 def CellName(column, row_num):
@@ -36,7 +37,13 @@ def GetFinvizApi(ticker):
     eps = data['EPS past 5Y']
     res.append(peg)
     res.append(eps)    
+    
     return res
+
+def GetTimeStamp():
+    date_time = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    return date_time
 
 def Main():
     gc = pygsheets.authorize()
@@ -48,18 +55,21 @@ def Main():
 
     while (True):
         ticker = GetTicker(row_index, wks)
+        date_time = GetTimeStamp()
         if ticker != '' and int(row_index) < limit:
+            SetCell('C', row_index, date_time, wks)
             fin_viz_data = GetFinvizApi(ticker)
-            SetCell('F', row_index, fin_viz_data[0], wks)
-            SetCell('G', row_index, fin_viz_data[1], wks)
+            SetCell('G', row_index, fin_viz_data[0], wks)
+            SetCell('H', row_index, fin_viz_data[1], wks)
             yahoo_data = GetYahooApi(ticker)
-            SetCell('K', row_index, yahoo_data[0], wks)
-            SetCell('J', row_index, yahoo_data[1], wks)
+            SetCell('L', row_index, yahoo_data[0], wks)
+            SetCell('K', row_index, yahoo_data[1], wks)
             print(ticker + str(row_index))
             row_index += 1
         else:
             break
 
 Main()
+
 print("hui")
 
